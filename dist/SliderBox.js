@@ -5,9 +5,13 @@ import {
   ActivityIndicator,
   TouchableHighlight,
   Dimensions,
+  ImageBackground,
+  TouchableOpacity,
+  Text
 } from 'react-native';
-
+import SmallCircleButton from '../../../component/button/SmallCircleButton';
 import Carousel, {Pagination} from 'react-native-snap-carousel'; //Thank From distributer(s) of this lib
+import { Entypo, FontAwesome } from '@expo/vector-icons';
 import styles from './SliderBox.style';
 
 // -------------------Props--------------------
@@ -39,6 +43,7 @@ export class SliderBox extends Component {
     this.state = {
       currentImage: props.firstItem || 0,
       loading: [],
+      imagePressed:false,
     };
     this.onCurrentImagePressedHandler = this.onCurrentImagePressedHandler.bind(this);
     this.onSnap = this.onSnap.bind(this);
@@ -63,6 +68,11 @@ export class SliderBox extends Component {
       }
     });
   }
+  pressHandler = () => {
+    this.setState({
+      imagePressed:!this.state.imagePressed,
+    })
+  }
 
   _renderItem({item, index}) {
     const {
@@ -75,8 +85,13 @@ export class SliderBox extends Component {
       resizeMode,
       imageLoadingColor = '#E91E63',
       underlayColor = "transparent",
-      activeOpacity=0.85
+      activeOpacity=0.85,
+      poomCustom,
+      closeModal,
     } = this.props;
+
+    
+  
     return (
       <View
         style={{
@@ -87,31 +102,66 @@ export class SliderBox extends Component {
           key={index}
           underlayColor={underlayColor}
           disabled={disableOnPress}
-          onPress={this.onCurrentImagePressedHandler}
+          onPress={poomCustom ? this.pressHandler : this.onCurrentImagePressedHandler}
           activeOpacity={activeOpacity}
         >
 
-          <ImageComponent
-            style={[
-              {
-                width: '100%',
-                height: sliderBoxHeight || 200,
-                alignSelf: 'center',
-              },
-              ImageComponentStyle,
-            ]}
-            source={typeof item === 'string' ? {uri: item} : item}
-            resizeMethod={resizeMethod || 'resize'}
-            resizeMode={resizeMode || 'cover'}
-            //onLoad={() => {}}
-            //onLoadStart={() => {}}
-            onLoadEnd={() => {
-              let t = this.state.loading;
-              t[index] = true;
-              this.setState({loading: t});
+         {poomCustom ? 
+         (
+          <ImageBackground
+            source={poomCustom ? {uri: item.pic} : item}
+            style={{
+              width:'100%',
+              height:'100%'
             }}
-            {...this.props}
-          />
+          >
+            <View style={{flex:1, backgroundColor: this.state.imagePressed ? 'rgba(0,0,0,0.65)' : 'transparent'}}>
+              <View style={{flex:1,padding:25, flexDirection:'row', justifyContent:'space-between'}}>
+                <SmallCircleButton
+                  diameter={30}
+                  color={'#fff'}
+                  icon={<Entypo name="cross" size={24} color="black" />}
+                  onPress={closeModal}
+                />
+                {this.state.imagePressed && <SmallCircleButton
+                  diameter={30}
+                  color={'#fff'}
+                  icon={<FontAwesome name="trash-o" size={24} color="black" />}
+                  // onPress={closeModal}
+                />}
+              </View>
+              <View style={{flex:1,}}></View>
+              <View style={{flex:1, justifyContent:'center', padding:30}}>
+                {this.state.imagePressed && <Text style={{fontSize: 30,color:'#fff',}}>{item.title}</Text>}
+              </View>
+            </View>
+          </ImageBackground>
+         )
+         :
+          (
+            <ImageComponent
+              style={[
+                {
+                  width: '100%',
+                  height: sliderBoxHeight || 200,
+                  alignSelf: 'center',
+                },
+                ImageComponentStyle,
+              ]}
+              source={typeof item === 'string' ? {uri: item} : item}
+              resizeMethod={resizeMethod || 'resize'}
+              resizeMode={resizeMode || 'cover'}
+              //onLoad={() => {}}
+              //onLoadStart={() => {}}
+              onLoadEnd={() => {
+                let t = this.state.loading;
+                t[index] = true;
+                this.setState({loading: t});
+              }}
+              {...this.props}
+            />
+          )
+        }
         </TouchableHighlight>
         {!this.state.loading[index] && (
           <LoaderComponent
