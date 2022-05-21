@@ -85,9 +85,11 @@ export class SliderBox extends Component {
       resizeMode,
       imageLoadingColor = '#E91E63',
       underlayColor = "transparent",
+
       activeOpacity=0.85,
       poomCustom,
       closeModal,
+      imageRemover,
     } = this.props;
 
     
@@ -116,7 +118,7 @@ export class SliderBox extends Component {
             }}
           >
             <View style={{flex:1, backgroundColor: this.state.imagePressed ? 'rgba(0,0,0,0.65)' : 'transparent'}}>
-              <View style={{flex:1,padding:25, flexDirection:'row', justifyContent:'space-between'}}>
+              <View style={{flex:1,paddingTop:60, paddingHorizontal:30, flexDirection:'row', justifyContent:'space-between'}}>
                 <SmallCircleButton
                   diameter={30}
                   color={'#fff'}
@@ -127,12 +129,14 @@ export class SliderBox extends Component {
                   diameter={30}
                   color={'#fff'}
                   icon={<FontAwesome name="trash-o" size={24} color="black" />}
-                  // onPress={closeModal}
+                  onPress={()=>imageRemover(item.photoIndex)}
                 />}
               </View>
               <View style={{flex:1,}}></View>
-              <View style={{flex:1, justifyContent:'center', padding:30}}>
-                {this.state.imagePressed && <Text style={{fontSize: 30,color:'#fff',}}>{item.title}</Text>}
+              <View style={{flex:1, padding:30}}>
+                {
+                  this.state.imagePressed && <Text style={{fontSize: 30,color:'#fff',}}>{item.title}</Text>
+                }
               </View>
             </View>
           </ImageBackground>
