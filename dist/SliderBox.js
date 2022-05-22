@@ -13,6 +13,8 @@ import SmallCircleButton from '../../../component/button/SmallCircleButton';
 import Carousel, {Pagination} from 'react-native-snap-carousel'; //Thank From distributer(s) of this lib
 import { Entypo, FontAwesome } from '@expo/vector-icons';
 import styles from './SliderBox.style';
+import BottomAlertModal from '../../../component/modal/BottomHalfModal/BottomAlertModal';
+import BottomPhotoModal from '../../../component/modal/BottomHalfModal/BottomPhotoModal';
 
 // -------------------Props--------------------
 // images
@@ -44,6 +46,7 @@ export class SliderBox extends Component {
       currentImage: props.firstItem || 0,
       loading: [],
       imagePressed:false,
+      removing:false
     };
     this.onCurrentImagePressedHandler = this.onCurrentImagePressedHandler.bind(this);
     this.onSnap = this.onSnap.bind(this);
@@ -85,14 +88,12 @@ export class SliderBox extends Component {
       resizeMode,
       imageLoadingColor = '#E91E63',
       underlayColor = "transparent",
-
       activeOpacity=0.85,
       poomCustom,
       closeModal,
-      imageRemover,
+      imageRemover
     } = this.props;
 
-    
   
     return (
       <View
@@ -118,7 +119,7 @@ export class SliderBox extends Component {
             }}
           >
             <View style={{flex:1, backgroundColor: this.state.imagePressed ? 'rgba(0,0,0,0.65)' : 'transparent'}}>
-              <View style={{flex:1,paddingTop:60, paddingHorizontal:30, flexDirection:'row', justifyContent:'space-between'}}>
+              <View style={{flex:1,paddingHorizontal:30, paddingTop:60, flexDirection:'row', justifyContent:'space-between'}}>
                 <SmallCircleButton
                   diameter={30}
                   color={'#fff'}
@@ -129,15 +130,24 @@ export class SliderBox extends Component {
                   diameter={30}
                   color={'#fff'}
                   icon={<FontAwesome name="trash-o" size={24} color="black" />}
-                  onPress={()=>imageRemover(item.photoIndex)}
+                  onPress={()=>{
+                    this.setState({
+                      removing:true
+                    })
+                  }}
                 />}
               </View>
               <View style={{flex:1,}}></View>
-              <View style={{flex:1, padding:30}}>
-                {
-                  this.state.imagePressed && <Text style={{fontSize: 30,color:'#fff',}}>{item.title}</Text>
-                }
+              <View style={{flex:1, justifyContent:'center', padding:30}}>
+                {this.state.imagePressed && <Text style={{fontSize: 30,color:'#fff',}}>{item.title}</Text>}
               </View>
+              {this.state.removing && 
+                <BottomAlertModal modalPresent={()=>{
+                  this.setState({
+                    removing:false
+                  })
+                }} isRemoving={true} imageRemover={imageRemover} index={item.photoIndex}/>
+              }
             </View>
           </ImageBackground>
          )
